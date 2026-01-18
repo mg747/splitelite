@@ -1,0 +1,1 @@
+# SplitElite - Smart Expense Splitting
