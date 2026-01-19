@@ -2,8 +2,14 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { v4 as uuidv4 } from 'uuid';
 import { User, Group, Expense, Settlement, Member, Split, ExpenseCategory, GroupCategory } from '@/types';
+import { type Locale, type CurrencyCode, defaultLocale, getDefaultCurrency, detectLocale } from '@/i18n/config';
 
 interface AppState {
+  // Locale & Currency
+  locale: Locale;
+  currency: CurrencyCode;
+  setLocale: (locale: Locale) => void;
+  setCurrency: (currency: CurrencyCode) => void;
   // User
   user: User | null;
   setUser: (user: User | null) => void;
@@ -42,6 +48,14 @@ interface AppState {
 export const useStore = create<AppState>()(
   persist(
     (set, get) => ({
+      // Locale & Currency
+      locale: defaultLocale,
+      currency: 'USD',
+      setLocale: (locale) => {
+        set({ locale, currency: getDefaultCurrency(locale) });
+      },
+      setCurrency: (currency) => set({ currency }),
+
       // User
       user: null,
       setUser: (user) => set({ user }),

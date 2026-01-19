@@ -1,6 +1,7 @@
 'use client';
 
 import { useStore } from '@/store';
+import { useTranslations } from 'next-intl';
 import { 
   LayoutDashboard, 
   Users, 
@@ -10,6 +11,8 @@ import {
   LogOut,
   ChevronRight
 } from 'lucide-react';
+import LanguageSelector from './LanguageSelector';
+import CurrencySelector from './CurrencySelector';
 
 interface SidebarProps {
   onNewGroup: () => void;
@@ -18,6 +21,7 @@ interface SidebarProps {
 
 export default function Sidebar({ onNewGroup, onUpgrade }: SidebarProps) {
   const { user, groups, activeGroupId, setActiveGroup } = useStore();
+  const t = useTranslations();
   
   const groupEmojis: Record<string, string> = {
     trip: '✈️',
@@ -32,8 +36,8 @@ export default function Sidebar({ onNewGroup, onUpgrade }: SidebarProps) {
     <aside className="w-72 h-screen bg-dark-900/50 border-r border-dark-700 flex flex-col">
       {/* Logo */}
       <div className="p-6 border-b border-dark-700">
-        <h1 className="text-2xl font-bold gradient-text">SplitElite</h1>
-        <p className="text-dark-400 text-sm mt-1">Smart expense splitting</p>
+        <h1 className="text-2xl font-bold gradient-text">{t('common.appName')}</h1>
+        <p className="text-dark-400 text-sm mt-1">{t('common.tagline')}</p>
       </div>
       
       {/* User */}
@@ -79,7 +83,7 @@ export default function Sidebar({ onNewGroup, onUpgrade }: SidebarProps) {
         <div className="mt-8">
           <div className="flex items-center justify-between px-4 mb-3">
             <span className="text-xs font-semibold text-dark-400 uppercase tracking-wider">
-              Groups
+              {t('groups.members')}
             </span>
             <button
               onClick={onNewGroup}
@@ -103,7 +107,7 @@ export default function Sidebar({ onNewGroup, onUpgrade }: SidebarProps) {
                 <span className="text-xl">{group.emoji || groupEmojis[group.category]}</span>
                 <div className="flex-1 text-left min-w-0">
                   <p className="font-medium truncate">{group.name}</p>
-                  <p className="text-xs text-dark-500">{group.members.length} members</p>
+                  <p className="text-xs text-dark-500">{group.members.length} {t('common.members')}</p>
                 </div>
                 <ChevronRight className={`w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity ${
                   activeGroupId === group.id ? 'opacity-100' : ''
@@ -114,12 +118,12 @@ export default function Sidebar({ onNewGroup, onUpgrade }: SidebarProps) {
             {groups.length === 0 && (
               <div className="px-4 py-8 text-center">
                 <Users className="w-12 h-12 mx-auto text-dark-600 mb-3" />
-                <p className="text-dark-400 text-sm">No groups yet</p>
+                <p className="text-dark-400 text-sm">{t('dashboard.noGroups')}</p>
                 <button
                   onClick={onNewGroup}
                   className="mt-3 text-primary-400 text-sm font-medium hover:text-primary-300"
                 >
-                  Create your first group
+                  {t('dashboard.createFirstGroup')}
                 </button>
               </div>
             )}
@@ -139,19 +143,27 @@ export default function Sidebar({ onNewGroup, onUpgrade }: SidebarProps) {
                 <Crown className="w-5 h-5 text-amber-400" />
               </div>
               <div className="text-left">
-                <p className="font-semibold text-amber-300">Upgrade to Pro</p>
-                <p className="text-xs text-amber-400/70">Unlock all features</p>
+                <p className="font-semibold text-amber-300">{t('upgrade.upgradeToPro')}</p>
+                <p className="text-xs text-amber-400/70">{t('upgrade.unlockFeatures')}</p>
               </div>
             </div>
           </button>
         </div>
       )}
       
+      {/* Language & Currency */}
+      <div className="p-4 border-t border-dark-700">
+        <div className="flex items-center gap-2 mb-3">
+          <LanguageSelector />
+          <CurrencySelector />
+        </div>
+      </div>
+
       {/* Settings */}
       <div className="p-4 border-t border-dark-700">
         <button className="w-full flex items-center gap-3 px-4 py-2 rounded-xl text-dark-400 hover:bg-dark-800 hover:text-white transition-all">
           <Settings className="w-5 h-5" />
-          <span className="font-medium">Settings</span>
+          <span className="font-medium">{t('settings.title')}</span>
         </button>
       </div>
     </aside>

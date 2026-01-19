@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useStore } from '@/store';
+import { useTranslations } from 'next-intl';
 import { 
   X, 
   Crown, 
@@ -91,20 +92,48 @@ const features = [
 ];
 
 export default function UpgradeModal({ onClose }: UpgradeModalProps) {
-  const { upgradeToPremium } = useStore();
+  const { upgradeToPremium, user, locale, currency } = useStore();
+  const t = useTranslations('upgrade');
   const [selectedPlan, setSelectedPlan] = useState('yearly');
   const [isProcessing, setIsProcessing] = useState(false);
   
   const handleUpgrade = async () => {
     setIsProcessing(true);
     
-    // Simulate payment processing
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    try {
+      // Call Stripe checkout API with locale and currency
+      const response = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          planId: selectedPlan === 'yearly' ? 'pro-yearly' : 'pro-monthly',
+          userId: user?.id,
+          userEmail: user?.email,
+          currency: currency.toLowerCase(),
+          locale: locale,
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.url) {
+        // Redirect to Stripe Checkout
+        window.location.href = data.url;
+      } else {
+        // Demo mode fallback
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        upgradeToPremium();
+        onClose();
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      // Demo mode fallback
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      upgradeToPremium();
+      onClose();
+    }
     
-    // In production, this would integrate with Stripe
-    upgradeToPremium();
     setIsProcessing(false);
-    onClose();
   };
   
   return (

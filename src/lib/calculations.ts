@@ -211,10 +211,24 @@ export function generateAnalytics(expenses: Expense[], members: Member[]): Analy
 }
 
 /**
- * Format currency for display
+ * Format currency for display with locale support
  */
-export function formatCurrency(amount: number, currency: string = 'USD'): string {
-  return new Intl.NumberFormat('en-US', {
+export function formatCurrency(amount: number, currency: string = 'USD', locale: string = 'en'): string {
+  // Map our locale codes to Intl locale codes
+  const localeMap: Record<string, string> = {
+    en: 'en-US',
+    es: 'es-ES',
+    fr: 'fr-FR',
+    de: 'de-DE',
+    zh: 'zh-CN',
+    ja: 'ja-JP',
+    pt: 'pt-BR',
+    ar: 'ar-SA',
+  };
+  
+  const intlLocale = localeMap[locale] || 'en-US';
+  
+  return new Intl.NumberFormat(intlLocale, {
     style: 'currency',
     currency,
     minimumFractionDigits: 2,

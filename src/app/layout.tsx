@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import TranslationProvider from '@/components/TranslationProvider'
 
 export const metadata: Metadata = {
   title: 'SplitElite - Smart Expense Splitting',
@@ -12,9 +13,11 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen bg-dark-950">
-        {children}
+        <TranslationProvider>
+          {children}
+        </TranslationProvider>
       </body>
     </html>
   )
