@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Mail, Heart } from 'lucide-react';
 
@@ -37,9 +38,9 @@ export default function Footer() {
         
         {/* Links */}
         <div className="mt-4 pt-4 border-t border-dark-800 flex flex-wrap items-center justify-center gap-6 text-sm">
-          <a href="#" className="text-dark-400 hover:text-white transition-colors">Privacy Policy</a>
-          <a href="#" className="text-dark-400 hover:text-white transition-colors">Terms of Service</a>
-          <a href="#" className="text-dark-400 hover:text-white transition-colors">Help Center</a>
+          <Link href="/privacy" className="text-dark-400 hover:text-white transition-colors">Privacy Policy</Link>
+          <Link href="/terms" className="text-dark-400 hover:text-white transition-colors">Terms of Service</Link>
+          <Link href="/help" className="text-dark-400 hover:text-white transition-colors">Help Center</Link>
           <span className="flex items-center gap-1 text-dark-500">
             Made with <Heart className="w-3 h-3 text-red-400" /> for expense sharing
           </span>
