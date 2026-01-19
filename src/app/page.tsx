@@ -7,14 +7,18 @@ import Dashboard from '@/components/Dashboard';
 import GroupView from '@/components/GroupView';
 import AddExpenseModal from '@/components/AddExpenseModal';
 import NewGroupModal from '@/components/NewGroupModal';
+import EditGroupModal from '@/components/EditGroupModal';
 import UpgradeModal from '@/components/UpgradeModal';
 import OnboardingModal from '@/components/OnboardingModal';
 import MobileNav from '@/components/MobileNav';
+import ConfirmDialog from '@/components/ConfirmDialog';
 
 export default function Home() {
-  const { user, activeGroupId, setActiveGroup } = useStore();
+  const { user, activeGroupId, setActiveGroup, deleteGroup } = useStore();
   const [showAddExpense, setShowAddExpense] = useState(false);
   const [showNewGroup, setShowNewGroup] = useState(false);
+  const [showEditGroup, setShowEditGroup] = useState(false);
+  const [showDeleteGroup, setShowDeleteGroup] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -96,6 +100,8 @@ export default function Home() {
             groupId={activeGroupId}
             onAddExpense={() => setShowAddExpense(true)}
             onUpgrade={() => setShowUpgrade(true)}
+            onEditGroup={() => setShowEditGroup(true)}
+            onDeleteGroup={() => setShowDeleteGroup(true)}
           />
         ) : (
           <Dashboard onSelectGroup={(id) => setActiveGroup(id)} />
@@ -112,6 +118,27 @@ export default function Home() {
       
       {showNewGroup && (
         <NewGroupModal onClose={() => setShowNewGroup(false)} />
+      )}
+      
+      {showEditGroup && activeGroupId && (
+        <EditGroupModal
+          groupId={activeGroupId}
+          onClose={() => setShowEditGroup(false)}
+        />
+      )}
+      
+      {showDeleteGroup && activeGroupId && (
+        <ConfirmDialog
+          title="Delete Group"
+          message="Are you sure you want to delete this group? All expenses and settlements in this group will be permanently deleted."
+          confirmLabel="Delete Group"
+          variant="danger"
+          onConfirm={() => {
+            deleteGroup(activeGroupId);
+            setShowDeleteGroup(false);
+          }}
+          onCancel={() => setShowDeleteGroup(false)}
+        />
       )}
       
       {showUpgrade && (

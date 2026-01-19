@@ -24,21 +24,31 @@ import {
   Crown,
   BarChart3,
   Download,
-  Bell
+  Bell,
+  Edit3,
+  Trash2,
+  Settings
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Expense, Settlement } from '@/types';
+import EditExpenseModal from './EditExpenseModal';
+import ConfirmDialog from './ConfirmDialog';
 
 interface GroupViewProps {
   groupId: string;
   onAddExpense: () => void;
   onUpgrade: () => void;
+  onEditGroup: () => void;
+  onDeleteGroup: () => void;
 }
 
-export default function GroupView({ groupId, onAddExpense, onUpgrade }: GroupViewProps) {
-  const { user, groups, expenses, settlements, completeSettlement, addSettlement } = useStore();
+export default function GroupView({ groupId, onAddExpense, onUpgrade, onEditGroup, onDeleteGroup }: GroupViewProps) {
+  const { user, groups, expenses, settlements, completeSettlement, addSettlement, deleteExpense } = useStore();
   const { formatAmount } = useCurrency();
   const [activeTab, setActiveTab] = useState<'expenses' | 'balances' | 'analytics'>('expenses');
+  const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+  const [deletingExpenseId, setDeletingExpenseId] = useState<string | null>(null);
+  const [showGroupMenu, setShowGroupMenu] = useState(false);
   
   const group = groups.find(g => g.id === groupId);
   if (!group) return null;
@@ -69,10 +79,51 @@ export default function GroupView({ groupId, onAddExpense, onUpgrade }: GroupVie
               </p>
             </div>
           </div>
-          <button onClick={onAddExpense} className="btn-primary flex items-center justify-center gap-2 w-full sm:w-auto">
-            <Plus className="w-5 h-5" />
-            Add Expense
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Group Settings Menu */}
+            <div className="relative">
+              <button
+                onClick={() => setShowGroupMenu(!showGroupMenu)}
+                className="p-3 rounded-xl bg-dark-800 hover:bg-dark-700 text-dark-400 hover:text-white transition-all"
+              >
+                <Settings className="w-5 h-5" />
+              </button>
+              {showGroupMenu && (
+                <>
+                  <div 
+                    className="fixed inset-0 z-40" 
+                    onClick={() => setShowGroupMenu(false)} 
+                  />
+                  <div className="absolute right-0 top-full mt-2 w-48 py-2 bg-dark-800 border border-dark-600 rounded-xl shadow-xl z-50">
+                    <button
+                      onClick={() => {
+                        setShowGroupMenu(false);
+                        onEditGroup();
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-dark-700 text-dark-300 hover:text-white transition-colors"
+                    >
+                      <Edit3 className="w-4 h-4" />
+                      Edit Group
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowGroupMenu(false);
+                        onDeleteGroup();
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-dark-700 text-red-400 hover:text-red-300 transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Delete Group
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+            <button onClick={onAddExpense} className="btn-primary flex items-center justify-center gap-2">
+              <Plus className="w-5 h-5" />
+              Add Expense
+            </button>
+          </div>
         </div>
         
         {/* Stats */}
@@ -168,7 +219,7 @@ export default function GroupView({ groupId, onAddExpense, onUpgrade }: GroupVie
                     return (
                       <div
                         key={expense.id}
-                        className="flex items-center gap-4 p-4 rounded-xl bg-dark-800/50 hover:bg-dark-800 transition-all"
+                        className="flex items-center gap-4 p-4 rounded-xl bg-dark-800/50 hover:bg-dark-800 transition-all group/expense"
                       >
                         <div className="w-12 h-12 rounded-xl bg-dark-700 flex items-center justify-center text-2xl">
                           {getCategoryEmoji(expense.category)}
@@ -179,13 +230,30 @@ export default function GroupView({ groupId, onAddExpense, onUpgrade }: GroupVie
                             {payer?.name} paid • {format(new Date(expense.date), 'MMM d, yyyy')}
                           </p>
                         </div>
-                        <div className="text-right">
+                        <div className="text-right mr-2">
                           <p className="font-bold text-white text-lg">
                             {formatAmount(expense.amount)}
                           </p>
                           <p className="text-xs text-dark-500">
                             {formatAmount(expense.amount / expense.splitBetween.length)}/person
                           </p>
+                        </div>
+                        {/* Edit/Delete buttons */}
+                        <div className="flex items-center gap-1 opacity-0 group-hover/expense:opacity-100 transition-opacity">
+                          <button
+                            onClick={() => setEditingExpense(expense)}
+                            className="p-2 rounded-lg hover:bg-dark-600 text-dark-400 hover:text-primary-400 transition-colors"
+                            title="Edit expense"
+                          >
+                            <Edit3 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => setDeletingExpenseId(expense.id)}
+                            className="p-2 rounded-lg hover:bg-dark-600 text-dark-400 hover:text-red-400 transition-colors"
+                            title="Delete expense"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
                       </div>
                     );
@@ -405,6 +473,29 @@ export default function GroupView({ groupId, onAddExpense, onUpgrade }: GroupVie
           </div>
         )}
       </div>
+      
+      {/* Edit Expense Modal */}
+      {editingExpense && (
+        <EditExpenseModal
+          expense={editingExpense}
+          onClose={() => setEditingExpense(null)}
+        />
+      )}
+      
+      {/* Delete Expense Confirmation */}
+      {deletingExpenseId && (
+        <ConfirmDialog
+          title="Delete Expense"
+          message="Are you sure you want to delete this expense? This action cannot be undone."
+          confirmLabel="Delete"
+          variant="danger"
+          onConfirm={() => {
+            deleteExpense(deletingExpenseId);
+            setDeletingExpenseId(null);
+          }}
+          onCancel={() => setDeletingExpenseId(null)}
+        />
+      )}
     </div>
   );
 }
