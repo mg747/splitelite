@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useStore } from '@/store';
 import { GroupCategory } from '@/types';
+import { useTranslation } from '@/hooks/useTranslation';
 import { X, Users, Plus, Trash2, Edit3 } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -22,6 +23,7 @@ const groupTypes: { value: GroupCategory; label: string; emoji: string }[] = [
 
 export default function EditGroupModal({ groupId, onClose }: EditGroupModalProps) {
   const { user, groups, updateGroup, addMemberToGroup, removeMemberFromGroup } = useStore();
+  const { t } = useTranslation();
   const group = groups.find(g => g.id === groupId);
   
   const [name, setName] = useState(group?.name || '');

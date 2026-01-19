@@ -23,8 +23,6 @@ export default function LanguageSelector() {
   const handleSelect = (newLocale: Locale) => {
     setLocale(newLocale);
     setIsOpen(false);
-    // Reload to apply new translations
-    window.location.reload();
   };
 
   return (

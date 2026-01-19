@@ -1,7 +1,7 @@
 'use client';
 
 import { useStore } from '@/store';
-import { useTranslations } from 'next-intl';
+import { useTranslation } from '@/hooks/useTranslation';
 import { 
   LayoutDashboard, 
   Users, 
@@ -21,7 +21,7 @@ interface SidebarProps {
 
 export default function Sidebar({ onNewGroup, onUpgrade }: SidebarProps) {
   const { user, groups, activeGroupId, setActiveGroup } = useStore();
-  const t = useTranslations();
+  const { t } = useTranslation();
   
   const groupEmojis: Record<string, string> = {
     trip: '✈️',

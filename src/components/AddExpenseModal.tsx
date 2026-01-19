@@ -5,6 +5,7 @@ import { useStore } from '@/store';
 import { splitEqually } from '@/lib/calculations';
 import { ExpenseCategory, Split } from '@/types';
 import { currencies } from '@/i18n/config';
+import { useTranslation } from '@/hooks/useTranslation';
 import { X, Receipt, Calendar, ChevronDown } from 'lucide-react';
 
 interface AddExpenseModalProps {
@@ -26,6 +27,7 @@ const categories: { value: ExpenseCategory; label: string; emoji: string }[] = [
 
 export default function AddExpenseModal({ groupId, onClose }: AddExpenseModalProps) {
   const { groups, addExpense, currency: defaultCurrency } = useStore();
+  const { t } = useTranslation();
   const group = groups.find(g => g.id === groupId);
   
   const [description, setDescription] = useState('');
@@ -85,7 +87,7 @@ export default function AddExpenseModal({ groupId, onClose }: AddExpenseModalPro
             <div className="p-3 rounded-2xl bg-gradient-to-br from-primary-500/30 to-emerald-500/30 neon-glow">
               <Receipt className="w-6 h-6 text-primary-400" />
             </div>
-            <h2 className="text-xl font-semibold text-white">Add Expense</h2>
+            <h2 className="text-xl font-semibold text-white">{t('expenses.addExpense')}</h2>
           </div>
           <button
             onClick={onClose}

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useStore } from '@/store';
+import { useTranslation } from '@/hooks/useTranslation';
 import { 
   ArrowRight, 
   Wallet, 
@@ -16,29 +17,30 @@ interface OnboardingModalProps {
   onComplete: () => void;
 }
 
-const steps = [
-  {
-    icon: Wallet,
-    title: 'Track Every Expense',
-    description: 'Add expenses in seconds. Split bills equally or customize amounts for each person.',
-    color: 'from-primary-500 to-emerald-400',
-  },
-  {
-    icon: Users,
-    title: 'Settle Up Easily',
-    description: 'See who owes what at a glance. Our smart algorithm minimizes the number of payments needed.',
-    color: 'from-blue-500 to-cyan-400',
-  },
-  {
-    icon: PieChart,
-    title: 'Gain Insights',
-    description: 'Understand your spending with beautiful analytics. See trends and category breakdowns.',
-    color: 'from-purple-500 to-pink-400',
-  },
-];
-
 export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
   const { setUser, loadDemoData } = useStore();
+  const { t } = useTranslation();
+  
+  const steps = [
+    {
+      icon: Wallet,
+      title: t('onboarding.trackExpenses'),
+      description: t('onboarding.trackExpensesDesc'),
+      color: 'from-primary-500 to-emerald-400',
+    },
+    {
+      icon: Users,
+      title: t('onboarding.settleUp'),
+      description: t('onboarding.settleUpDesc'),
+      color: 'from-blue-500 to-cyan-400',
+    },
+    {
+      icon: PieChart,
+      title: t('onboarding.gainInsights'),
+      description: t('onboarding.gainInsightsDesc'),
+      color: 'from-purple-500 to-pink-400',
+    },
+  ];
   const [step, setStep] = useState(0);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -98,7 +100,7 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
               onClick={() => setStep(step + 1)}
               className="btn-primary-3d w-full flex items-center justify-center gap-2"
             >
-              Continue
+              {t('onboarding.continue')}
               <ArrowRight className="w-5 h-5" />
             </button>
             
@@ -106,7 +108,7 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
               onClick={() => setStep(steps.length)}
               className="text-dark-400 hover:text-white transition-colors"
             >
-              Skip intro
+              {t('onboarding.skipIntro')}
             </button>
           </div>
         </div>
@@ -120,20 +122,20 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
       <div className="w-full max-w-md animate-fade-in">
         {/* Logo */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold gradient-text mb-2">SplitElite</h1>
-          <p className="text-dark-400">The smart way to split expenses</p>
+          <h1 className="text-4xl font-bold gradient-text mb-2">{t('common.appName')}</h1>
+          <p className="text-dark-400">{t('common.tagline')}</p>
         </div>
         
         {/* Form */}
         <div className="card neon-border">
           <h2 className="text-xl font-semibold text-white mb-6">
-            Create your account
+            {t('auth.createAccount')}
           </h2>
           
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-dark-300 mb-2">
-                Your name
+                {t('onboarding.yourName')}
               </label>
               <input
                 type="text"
@@ -146,7 +148,7 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
             
             <div>
               <label className="block text-sm font-medium text-dark-300 mb-2">
-                Email address
+                {t('onboarding.emailAddress')}
               </label>
               <input
                 type="email"
@@ -162,14 +164,14 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
               disabled={!name.trim() || !email.trim()}
               className="btn-primary-3d w-full mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Get Started Free
+              {t('onboarding.getStarted')}
             </button>
           </div>
           
           {/* Divider */}
           <div className="flex items-center gap-4 my-6">
             <div className="flex-1 h-px bg-dark-700" />
-            <span className="text-dark-500 text-sm">or</span>
+            <span className="text-dark-500 text-sm">{t('common.or')}</span>
             <div className="flex-1 h-px bg-dark-700" />
           </div>
           
@@ -179,20 +181,20 @@ export default function OnboardingModal({ onComplete }: OnboardingModalProps) {
             className="btn-secondary-3d w-full flex items-center justify-center gap-2"
           >
             <Sparkles className="w-5 h-5" />
-            Try Demo Mode
+            {t('onboarding.tryDemo')}
           </button>
           
           <p className="text-center text-dark-500 text-xs mt-4">
-            Demo mode loads sample data so you can explore all features
+            {t('onboarding.demoNote')}
           </p>
         </div>
         
         {/* Features */}
         <div className="mt-8 grid grid-cols-3 gap-4">
           {[
-            { icon: Check, text: 'Free forever' },
-            { icon: Check, text: 'No credit card' },
-            { icon: Check, text: 'Instant setup' },
+            { icon: Check, text: t('onboarding.freeForever') },
+            { icon: Check, text: t('onboarding.noCreditCard') },
+            { icon: Check, text: t('onboarding.instantSetup') },
           ].map((item, i) => (
             <div key={i} className="flex items-center gap-2 text-dark-400 text-sm">
               <item.icon className="w-4 h-4 text-primary-400" />

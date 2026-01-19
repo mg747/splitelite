@@ -10,6 +10,7 @@ import {
   generateAnalytics
 } from '@/lib/calculations';
 import { useCurrency } from '@/hooks/useCurrency';
+import { useTranslation } from '@/hooks/useTranslation';
 import { 
   Plus, 
   ArrowRight, 
@@ -45,6 +46,7 @@ interface GroupViewProps {
 export default function GroupView({ groupId, onAddExpense, onUpgrade, onEditGroup, onDeleteGroup }: GroupViewProps) {
   const { user, groups, expenses, settlements, completeSettlement, addSettlement, deleteExpense } = useStore();
   const { formatAmount } = useCurrency();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'expenses' | 'balances' | 'analytics'>('expenses');
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [deletingExpenseId, setDeletingExpenseId] = useState<string | null>(null);
@@ -75,7 +77,7 @@ export default function GroupView({ groupId, onAddExpense, onUpgrade, onEditGrou
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-white">{group.name}</h1>
               <p className="text-dark-400 mt-1 text-sm md:text-base">
-                {group.members.length} members • {groupExpenses.length} expenses
+                {group.members.length} {t('common.members')} • {groupExpenses.length} {t('common.expenses')}
               </p>
             </div>
           </div>
@@ -103,7 +105,7 @@ export default function GroupView({ groupId, onAddExpense, onUpgrade, onEditGrou
                       className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-dark-700 text-dark-300 hover:text-white transition-colors"
                     >
                       <Edit3 className="w-4 h-4" />
-                      Edit Group
+                      {t('common.edit')}
                     </button>
                     <button
                       onClick={() => {
@@ -113,7 +115,7 @@ export default function GroupView({ groupId, onAddExpense, onUpgrade, onEditGrou
                       className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-dark-700 text-red-400 hover:text-red-300 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
-                      Delete Group
+                      {t('common.delete')}
                     </button>
                   </div>
                 </>
@@ -121,7 +123,7 @@ export default function GroupView({ groupId, onAddExpense, onUpgrade, onEditGrou
             </div>
             <button onClick={onAddExpense} className="btn-primary flex items-center justify-center gap-2">
               <Plus className="w-5 h-5" />
-              Add Expense
+              {t('expenses.addExpense')}
             </button>
           </div>
         </div>
@@ -131,35 +133,35 @@ export default function GroupView({ groupId, onAddExpense, onUpgrade, onEditGrou
           <div className="card p-3 md:p-6">
             <div className="flex items-center gap-2 mb-2">
               <Receipt className="w-4 h-4 md:w-5 md:h-5 text-primary-400" />
-              <span className="text-dark-400 text-xs md:text-base hidden sm:block">Total Spent</span>
+              <span className="text-dark-400 text-xs md:text-base hidden sm:block">{t('groups.totalSpent')}</span>
             </div>
             <p className="text-lg md:text-3xl font-bold text-white">{formatAmount(totalSpent)}</p>
-            <p className="text-xs text-dark-500 sm:hidden">Total</p>
+            <p className="text-xs text-dark-500 sm:hidden">{t('groups.totalSpent')}</p>
           </div>
           
           <div className="card p-3 md:p-6">
             <div className="flex items-center gap-2 mb-2">
               <Users className="w-4 h-4 md:w-5 md:h-5 text-blue-400" />
-              <span className="text-dark-400 text-xs md:text-base hidden sm:block">Per Person</span>
+              <span className="text-dark-400 text-xs md:text-base hidden sm:block">{t('groups.perPerson')}</span>
             </div>
             <p className="text-lg md:text-3xl font-bold text-white">
               {formatAmount(totalSpent / group.members.length)}
             </p>
-            <p className="text-xs text-dark-500 sm:hidden">Per person</p>
+            <p className="text-xs text-dark-500 sm:hidden">{t('groups.perPerson')}</p>
           </div>
           
           <div className="card p-3 md:p-6">
             <div className="flex items-center gap-2 mb-2">
               <Calendar className="w-4 h-4 md:w-5 md:h-5 text-purple-400" />
-              <span className="text-dark-400 text-xs md:text-base hidden sm:block">Last Activity</span>
+              <span className="text-dark-400 text-xs md:text-base hidden sm:block">{t('groups.lastActivity')}</span>
             </div>
             <p className="text-sm md:text-xl font-bold text-white">
               {groupExpenses.length > 0 
                 ? format(new Date(groupExpenses[groupExpenses.length - 1].date), 'MMM d')
-                : 'None'
+                : t('groups.noExpensesYet')
               }
             </p>
-            <p className="text-xs text-dark-500 sm:hidden">Last</p>
+            <p className="text-xs text-dark-500 sm:hidden">{t('groups.lastActivity')}</p>
           </div>
         </div>
         

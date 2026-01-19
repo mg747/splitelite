@@ -3,6 +3,7 @@
 import { useStore } from '@/store';
 import { calculateBalances, generateAnalytics } from '@/lib/calculations';
 import { useCurrency } from '@/hooks/useCurrency';
+import { useTranslation } from '@/hooks/useTranslation';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -20,6 +21,7 @@ interface DashboardProps {
 export default function Dashboard({ onSelectGroup }: DashboardProps) {
   const { user, groups, expenses } = useStore();
   const { formatAmount } = useCurrency();
+  const { t } = useTranslation();
   
   // Calculate total balances across all groups
   const totalOwed = groups.reduce((total, group) => {
@@ -60,9 +62,9 @@ export default function Dashboard({ onSelectGroup }: DashboardProps) {
         {/* Header */}
         <div className="mb-6 md:mb-8">
           <h1 className="text-2xl md:text-3xl font-bold text-white">
-            Welcome back, {user?.name?.split(' ')[0] || 'there'}
+            {t('dashboard.welcomeBack', { name: user?.name?.split(' ')[0] || '' })}
           </h1>
-          <p className="text-dark-400 mt-1 text-sm md:text-base">Here's your expense overview</p>
+          <p className="text-dark-400 mt-1 text-sm md:text-base">{t('dashboard.overview')}</p>
         </div>
         
         {/* Stats Grid */}
@@ -72,12 +74,12 @@ export default function Dashboard({ onSelectGroup }: DashboardProps) {
               <div className="p-2 md:p-3 rounded-xl bg-green-500/20">
                 <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-green-400" />
               </div>
-              <span className="text-xs text-dark-400 hidden sm:block">You're owed</span>
+              <span className="text-xs text-dark-400 hidden sm:block">{t('dashboard.youreOwed')}</span>
             </div>
             <p className="text-xl md:text-3xl font-bold text-green-400">
               {formatAmount(totalOwed)}
             </p>
-            <p className="text-xs md:text-sm text-dark-400 mt-1">owed to you</p>
+            <p className="text-xs md:text-sm text-dark-400 mt-1">{t('dashboard.youreOwed')}</p>
           </div>
           
           <div className="card p-4 md:p-6">
@@ -85,12 +87,12 @@ export default function Dashboard({ onSelectGroup }: DashboardProps) {
               <div className="p-2 md:p-3 rounded-xl bg-red-500/20">
                 <TrendingDown className="w-5 h-5 md:w-6 md:h-6 text-red-400" />
               </div>
-              <span className="text-xs text-dark-400 hidden sm:block">You owe</span>
+              <span className="text-xs text-dark-400 hidden sm:block">{t('dashboard.youOwe')}</span>
             </div>
             <p className="text-xl md:text-3xl font-bold text-red-400">
               {formatAmount(totalOwe)}
             </p>
-            <p className="text-xs md:text-sm text-dark-400 mt-1">you owe</p>
+            <p className="text-xs md:text-sm text-dark-400 mt-1">{t('dashboard.youOwe')}</p>
           </div>
           
           <div className="card p-4 md:p-6">
@@ -98,12 +100,12 @@ export default function Dashboard({ onSelectGroup }: DashboardProps) {
               <div className="p-2 md:p-3 rounded-xl bg-blue-500/20">
                 <Receipt className="w-5 h-5 md:w-6 md:h-6 text-blue-400" />
               </div>
-              <span className="text-xs text-dark-400 hidden sm:block">Total tracked</span>
+              <span className="text-xs text-dark-400 hidden sm:block">{t('dashboard.totalTracked')}</span>
             </div>
             <p className="text-xl md:text-3xl font-bold text-white">
               {formatAmount(totalExpenses)}
             </p>
-            <p className="text-xs md:text-sm text-dark-400 mt-1">{expenses.length} expenses</p>
+            <p className="text-xs md:text-sm text-dark-400 mt-1">{expenses.length} {t('common.expenses')}</p>
           </div>
           
           <div className="card p-4 md:p-6">
@@ -111,11 +113,11 @@ export default function Dashboard({ onSelectGroup }: DashboardProps) {
               <div className="p-2 md:p-3 rounded-xl bg-purple-500/20">
                 <Users className="w-5 h-5 md:w-6 md:h-6 text-purple-400" />
               </div>
-              <span className="text-xs text-dark-400 hidden sm:block">Active groups</span>
+              <span className="text-xs text-dark-400 hidden sm:block">{t('dashboard.activeGroups')}</span>
             </div>
             <p className="text-xl md:text-3xl font-bold text-white">{groups.length}</p>
             <p className="text-xs md:text-sm text-dark-400 mt-1">
-              {groups.reduce((sum, g) => sum + g.members.length, 0)} members
+              {groups.reduce((sum, g) => sum + g.members.length, 0)} {t('common.members')}
             </p>
           </div>
         </div>
@@ -125,9 +127,9 @@ export default function Dashboard({ onSelectGroup }: DashboardProps) {
           {/* Groups */}
           <div className="card">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-white">Your Groups</h2>
+              <h2 className="text-xl font-semibold text-white">{t('dashboard.yourGroups')}</h2>
               <button className="text-primary-400 text-sm font-medium hover:text-primary-300">
-                View all
+                {t('dashboard.viewAll')}
               </button>
             </div>
             
@@ -149,7 +151,7 @@ export default function Dashboard({ onSelectGroup }: DashboardProps) {
                     <span className="text-3xl">{group.emoji}</span>
                     <div className="flex-1 text-left">
                       <p className="font-semibold text-white">{group.name}</p>
-                      <p className="text-sm text-dark-400">{group.members.length} members</p>
+                      <p className="text-sm text-dark-400">{group.members.length} {t('common.members')}</p>
                     </div>
                     <div className="text-right">
                       <p className={`font-semibold ${
@@ -157,7 +159,7 @@ export default function Dashboard({ onSelectGroup }: DashboardProps) {
                       }`}>
                         {userBalance > 0 ? '+' : ''}{formatAmount(userBalance)}
                       </p>
-                      <p className="text-xs text-dark-500">your balance</p>
+                      <p className="text-xs text-dark-500">{t('dashboard.yourBalance')}</p>
                     </div>
                     <ArrowRight className="w-5 h-5 text-dark-500 group-hover:text-primary-400 transition-colors" />
                   </button>
@@ -167,8 +169,8 @@ export default function Dashboard({ onSelectGroup }: DashboardProps) {
               {groups.length === 0 && (
                 <div className="text-center py-8">
                   <Users className="w-12 h-12 mx-auto text-dark-600 mb-3" />
-                  <p className="text-dark-400">No groups yet</p>
-                  <p className="text-sm text-dark-500 mt-1">Create a group to start tracking expenses</p>
+                  <p className="text-dark-400">{t('dashboard.noGroups')}</p>
+                  <p className="text-sm text-dark-500 mt-1">{t('dashboard.createFirstGroup')}</p>
                 </div>
               )}
             </div>
@@ -177,9 +179,9 @@ export default function Dashboard({ onSelectGroup }: DashboardProps) {
           {/* Recent Activity */}
           <div className="card">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-white">Recent Activity</h2>
+              <h2 className="text-xl font-semibold text-white">{t('dashboard.recentActivity')}</h2>
               <button className="text-primary-400 text-sm font-medium hover:text-primary-300">
-                View all
+                {t('dashboard.viewAll')}
               </button>
             </div>
             
@@ -212,8 +214,8 @@ export default function Dashboard({ onSelectGroup }: DashboardProps) {
               {recentExpenses.length === 0 && (
                 <div className="text-center py-8">
                   <Receipt className="w-12 h-12 mx-auto text-dark-600 mb-3" />
-                  <p className="text-dark-400">No expenses yet</p>
-                  <p className="text-sm text-dark-500 mt-1">Add your first expense to get started</p>
+                  <p className="text-dark-400">{t('dashboard.noExpenses')}</p>
+                  <p className="text-sm text-dark-500 mt-1">{t('dashboard.addFirstExpense')}</p>
                 </div>
               )}
             </div>

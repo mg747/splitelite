@@ -5,6 +5,7 @@ import { useStore } from '@/store';
 import { splitEqually } from '@/lib/calculations';
 import { ExpenseCategory, Split, Expense } from '@/types';
 import { currencies } from '@/i18n/config';
+import { useTranslation } from '@/hooks/useTranslation';
 import { X, Receipt, Calendar, ChevronDown, Edit3 } from 'lucide-react';
 
 interface EditExpenseModalProps {
@@ -26,6 +27,7 @@ const categories: { value: ExpenseCategory; label: string; emoji: string }[] = [
 
 export default function EditExpenseModal({ expense, onClose }: EditExpenseModalProps) {
   const { groups, updateExpense } = useStore();
+  const { t } = useTranslation();
   const group = groups.find(g => g.id === expense.groupId);
   
   const [description, setDescription] = useState(expense.description);

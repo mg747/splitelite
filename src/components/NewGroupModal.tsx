@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useStore } from '@/store';
 import { GroupCategory, Member } from '@/types';
+import { useTranslation } from '@/hooks/useTranslation';
 import { X, Users, Plus, Trash2 } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -21,6 +22,7 @@ const groupTypes: { value: GroupCategory; label: string; emoji: string }[] = [
 
 export default function NewGroupModal({ onClose }: NewGroupModalProps) {
   const { user, addGroup, setActiveGroup } = useStore();
+  const { t } = useTranslation();
   
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -81,7 +83,7 @@ export default function NewGroupModal({ onClose }: NewGroupModalProps) {
             <div className="p-2 rounded-xl bg-primary-500/20">
               <Users className="w-5 h-5 text-primary-400" />
             </div>
-            <h2 className="text-xl font-semibold text-white">Create Group</h2>
+            <h2 className="text-xl font-semibold text-white">{t('groups.createGroup')}</h2>
           </div>
           <button
             onClick={onClose}
@@ -96,13 +98,13 @@ export default function NewGroupModal({ onClose }: NewGroupModalProps) {
           {/* Group Name */}
           <div>
             <label className="block text-sm font-medium text-dark-300 mb-2">
-              Group Name
+              {t('groups.groupName')}
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g., Summer Trip 2024"
+              placeholder={t('groups.groupNamePlaceholder')}
               className="input"
               required
             />
@@ -111,7 +113,7 @@ export default function NewGroupModal({ onClose }: NewGroupModalProps) {
           {/* Description */}
           <div>
             <label className="block text-sm font-medium text-dark-300 mb-2">
-              Description (optional)
+              {t('groups.description')} ({t('groups.optional')})
             </label>
             <input
               type="text"
