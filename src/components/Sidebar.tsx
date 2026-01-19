@@ -33,15 +33,11 @@ export default function Sidebar({ onNewGroup, onUpgrade }: SidebarProps) {
   };
   
   return (
-    <aside className="w-72 h-screen bg-gradient-to-b from-dark-900/95 to-dark-950 border-r border-amber-900/20 flex flex-col vintage-texture">
-      {/* Logo - Peaky Blinders Style */}
-      <div className="p-6 border-b border-amber-900/30 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent"></div>
-        <div className="relative">
-          <h1 className="text-3xl font-bold peaky-title gradient-gold">{t('common.appName')}</h1>
-          <p className="text-amber-600/70 text-sm mt-1 italic">"In the bleak midwinter..."</p>
-          <div className="peaky-divider mt-4"></div>
-        </div>
+    <aside className="w-72 h-screen bg-dark-900/50 border-r border-dark-700 flex flex-col">
+      {/* Logo */}
+      <div className="p-6 border-b border-dark-700">
+        <h1 className="text-2xl font-bold gradient-text">{t('common.appName')}</h1>
+        <p className="text-dark-400 text-sm mt-1">{t('common.tagline')}</p>
       </div>
       
       {/* User */}

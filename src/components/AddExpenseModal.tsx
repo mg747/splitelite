@@ -85,16 +85,13 @@ export default function AddExpenseModal({ groupId, onClose }: AddExpenseModalPro
             <div className="p-3 rounded-2xl bg-gradient-to-br from-primary-500/30 to-emerald-500/30 neon-glow">
               <Receipt className="w-6 h-6 text-primary-400" />
             </div>
-            <div>
-              <h2 className="text-2xl font-bold text-white peaky-title">Add Expense</h2>
-              <p className="text-dark-400 text-sm">By order of the Peaky Blinders</p>
-            </div>
+            <h2 className="text-xl font-semibold text-white">Add Expense</h2>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl hover:bg-dark-700 text-dark-400 hover:text-white transition-all hover:rotate-90 duration-300"
+            className="p-2 rounded-xl hover:bg-dark-700 text-dark-400 hover:text-white transition-all"
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5" />
           </button>
         </div>
         

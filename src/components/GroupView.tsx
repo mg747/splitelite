@@ -5,11 +5,11 @@ import { useStore } from '@/store';
 import { 
   calculateBalances, 
   calculateOptimalSettlements, 
-  formatCurrency, 
   getCategoryEmoji,
   getCategoryLabel,
   generateAnalytics
 } from '@/lib/calculations';
+import { useCurrency } from '@/hooks/useCurrency';
 import { 
   Plus, 
   ArrowRight, 
@@ -37,6 +37,7 @@ interface GroupViewProps {
 
 export default function GroupView({ groupId, onAddExpense, onUpgrade }: GroupViewProps) {
   const { user, groups, expenses, settlements, completeSettlement, addSettlement } = useStore();
+  const { formatAmount } = useCurrency();
   const [activeTab, setActiveTab] = useState<'expenses' | 'balances' | 'analytics'>('expenses');
   
   const group = groups.find(g => g.id === groupId);
@@ -81,7 +82,7 @@ export default function GroupView({ groupId, onAddExpense, onUpgrade }: GroupVie
               <Receipt className="w-4 h-4 md:w-5 md:h-5 text-primary-400" />
               <span className="text-dark-400 text-xs md:text-base hidden sm:block">Total Spent</span>
             </div>
-            <p className="text-lg md:text-3xl font-bold text-white">{formatCurrency(totalSpent)}</p>
+            <p className="text-lg md:text-3xl font-bold text-white">{formatAmount(totalSpent)}</p>
             <p className="text-xs text-dark-500 sm:hidden">Total</p>
           </div>
           
@@ -91,7 +92,7 @@ export default function GroupView({ groupId, onAddExpense, onUpgrade }: GroupVie
               <span className="text-dark-400 text-xs md:text-base hidden sm:block">Per Person</span>
             </div>
             <p className="text-lg md:text-3xl font-bold text-white">
-              {formatCurrency(totalSpent / group.members.length)}
+              {formatAmount(totalSpent / group.members.length)}
             </p>
             <p className="text-xs text-dark-500 sm:hidden">Per person</p>
           </div>
@@ -180,10 +181,10 @@ export default function GroupView({ groupId, onAddExpense, onUpgrade }: GroupVie
                         </div>
                         <div className="text-right">
                           <p className="font-bold text-white text-lg">
-                            {formatCurrency(expense.amount)}
+                            {formatAmount(expense.amount)}
                           </p>
                           <p className="text-xs text-dark-500">
-                            {formatCurrency(expense.amount / expense.splitBetween.length)}/person
+                            {formatAmount(expense.amount / expense.splitBetween.length)}/person
                           </p>
                         </div>
                       </div>
@@ -224,7 +225,7 @@ export default function GroupView({ groupId, onAddExpense, onUpgrade }: GroupVie
                             ? 'text-red-400' 
                             : 'text-dark-400'
                       }`}>
-                        {balance.amount > 0 ? '+' : ''}{formatCurrency(balance.amount)}
+                        {balance.amount > 0 ? '+' : ''}{formatAmount(balance.amount)}
                       </p>
                     </div>
                   </div>
@@ -270,7 +271,7 @@ export default function GroupView({ groupId, onAddExpense, onUpgrade }: GroupVie
                           </div>
                         </div>
                         <p className="font-bold text-white">
-                          {formatCurrency(settlement.amount)}
+                          {formatAmount(settlement.amount)}
                         </p>
                         <button
                           onClick={() => handleSettleUp(settlement)}
@@ -337,7 +338,7 @@ export default function GroupView({ groupId, onAddExpense, onUpgrade }: GroupVie
                         </div>
                         <div className="text-right">
                           <span className="text-white font-semibold">
-                            {formatCurrency(cat.amount)}
+                            {formatAmount(cat.amount)}
                           </span>
                           <span className="text-dark-400 text-sm ml-2">
                             ({cat.percentage}%)
@@ -376,7 +377,7 @@ export default function GroupView({ groupId, onAddExpense, onUpgrade }: GroupVie
                     <div className="flex-1">
                       <p className="font-medium text-white">{spender.name}</p>
                     </div>
-                    <p className="font-bold text-white">{formatCurrency(spender.amount)}</p>
+                    <p className="font-bold text-white">{formatAmount(spender.amount)}</p>
                   </div>
                 ))}
               </div>
@@ -391,13 +392,13 @@ export default function GroupView({ groupId, onAddExpense, onUpgrade }: GroupVie
               <div className="card text-center">
                 <p className="text-dark-400 mb-2">Average Expense</p>
                 <p className="text-3xl font-bold text-white">
-                  {formatCurrency(analytics.averageExpense)}
+                  {formatAmount(analytics.averageExpense)}
                 </p>
               </div>
               <div className="card text-center">
                 <p className="text-dark-400 mb-2">Total Tracked</p>
                 <p className="text-3xl font-bold gradient-text">
-                  {formatCurrency(analytics.totalSpent)}
+                  {formatAmount(analytics.totalSpent)}
                 </p>
               </div>
             </div>

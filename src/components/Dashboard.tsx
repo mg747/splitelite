@@ -1,7 +1,8 @@
 'use client';
 
 import { useStore } from '@/store';
-import { calculateBalances, formatCurrency, generateAnalytics } from '@/lib/calculations';
+import { calculateBalances, generateAnalytics } from '@/lib/calculations';
+import { useCurrency } from '@/hooks/useCurrency';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -18,6 +19,7 @@ interface DashboardProps {
 
 export default function Dashboard({ onSelectGroup }: DashboardProps) {
   const { user, groups, expenses } = useStore();
+  const { formatAmount } = useCurrency();
   
   // Calculate total balances across all groups
   const totalOwed = groups.reduce((total, group) => {
@@ -73,7 +75,7 @@ export default function Dashboard({ onSelectGroup }: DashboardProps) {
               <span className="text-xs text-dark-400 hidden sm:block">You're owed</span>
             </div>
             <p className="text-xl md:text-3xl font-bold text-green-400">
-              {formatCurrency(totalOwed)}
+              {formatAmount(totalOwed)}
             </p>
             <p className="text-xs md:text-sm text-dark-400 mt-1">owed to you</p>
           </div>
@@ -86,7 +88,7 @@ export default function Dashboard({ onSelectGroup }: DashboardProps) {
               <span className="text-xs text-dark-400 hidden sm:block">You owe</span>
             </div>
             <p className="text-xl md:text-3xl font-bold text-red-400">
-              {formatCurrency(totalOwe)}
+              {formatAmount(totalOwe)}
             </p>
             <p className="text-xs md:text-sm text-dark-400 mt-1">you owe</p>
           </div>
@@ -99,7 +101,7 @@ export default function Dashboard({ onSelectGroup }: DashboardProps) {
               <span className="text-xs text-dark-400 hidden sm:block">Total tracked</span>
             </div>
             <p className="text-xl md:text-3xl font-bold text-white">
-              {formatCurrency(totalExpenses)}
+              {formatAmount(totalExpenses)}
             </p>
             <p className="text-xs md:text-sm text-dark-400 mt-1">{expenses.length} expenses</p>
           </div>
@@ -153,7 +155,7 @@ export default function Dashboard({ onSelectGroup }: DashboardProps) {
                       <p className={`font-semibold ${
                         userBalance > 0 ? 'text-green-400' : userBalance < 0 ? 'text-red-400' : 'text-dark-400'
                       }`}>
-                        {userBalance > 0 ? '+' : ''}{formatCurrency(userBalance)}
+                        {userBalance > 0 ? '+' : ''}{formatAmount(userBalance)}
                       </p>
                       <p className="text-xs text-dark-500">your balance</p>
                     </div>
@@ -201,7 +203,7 @@ export default function Dashboard({ onSelectGroup }: DashboardProps) {
                       </p>
                     </div>
                     <p className="font-semibold text-white">
-                      {formatCurrency(expense.amount)}
+                      {formatAmount(expense.amount)}
                     </p>
                   </div>
                 );
