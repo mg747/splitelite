@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { useStore } from '@/store';
 import { splitEqually } from '@/lib/calculations';
 import { ExpenseCategory, Split } from '@/types';
-import { X, Receipt, Users, Calendar, DollarSign, Tag } from 'lucide-react';
+import { currencies } from '@/i18n/config';
+import { X, Receipt, Calendar, ChevronDown } from 'lucide-react';
 
 interface AddExpenseModalProps {
   groupId: string;
@@ -24,20 +25,23 @@ const categories: { value: ExpenseCategory; label: string; emoji: string }[] = [
 ];
 
 export default function AddExpenseModal({ groupId, onClose }: AddExpenseModalProps) {
-  const { groups, addExpense } = useStore();
+  const { groups, addExpense, currency: defaultCurrency } = useStore();
   const group = groups.find(g => g.id === groupId);
   
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
+  const [selectedCurrency, setSelectedCurrency] = useState(defaultCurrency || 'USD');
   const [paidBy, setPaidBy] = useState(group?.members[0]?.id || '');
   const [category, setCategory] = useState<ExpenseCategory>('other');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [splitType, setSplitType] = useState<'equal' | 'custom'>('equal');
   const [selectedMembers, setSelectedMembers] = useState<string[]>(
     group?.members.map(m => m.id) || []
   );
+  const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
   
   if (!group) return null;
+
+  const currentCurrencyData = currencies.find(c => c.code === selectedCurrency) || currencies[0];
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,7 +58,7 @@ export default function AddExpenseModal({ groupId, onClose }: AddExpenseModalPro
       groupId,
       description,
       amount: amountNum,
-      currency: group.currency,
+      currency: selectedCurrency,
       paidBy,
       splitBetween: splits,
       category,
@@ -73,29 +77,32 @@ export default function AddExpenseModal({ groupId, onClose }: AddExpenseModalPro
   };
   
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-dark-900 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto border border-dark-700 shadow-2xl animate-slide-up">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 p-4">
+      <div className="modal-3d bg-dark-900/95 rounded-3xl w-full max-w-lg max-h-[90vh] overflow-y-auto border border-primary-500/30 shadow-2xl animate-slide-up neon-border">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-dark-700">
+        <div className="flex items-center justify-between p-6 border-b border-dark-700/50">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-primary-500/20">
-              <Receipt className="w-5 h-5 text-primary-400" />
+            <div className="p-3 rounded-2xl bg-gradient-to-br from-primary-500/30 to-emerald-500/30 neon-glow">
+              <Receipt className="w-6 h-6 text-primary-400" />
             </div>
-            <h2 className="text-xl font-semibold text-white">Add Expense</h2>
+            <div>
+              <h2 className="text-2xl font-bold text-white peaky-title">Add Expense</h2>
+              <p className="text-dark-400 text-sm">By order of the Peaky Blinders</p>
+            </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-dark-700 text-dark-400 hover:text-white transition-colors"
+            className="p-2 rounded-xl hover:bg-dark-700 text-dark-400 hover:text-white transition-all hover:rotate-90 duration-300"
           >
-            <X className="w-5 h-5" />
+            <X className="w-6 h-6" />
           </button>
         </div>
         
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="p-6 space-y-5">
           {/* Description */}
-          <div>
-            <label className="block text-sm font-medium text-dark-300 mb-2">
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-dark-300 uppercase tracking-wider">
               Description
             </label>
             <input
@@ -103,18 +110,52 @@ export default function AddExpenseModal({ groupId, onClose }: AddExpenseModalPro
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="What was this expense for?"
-              className="input"
+              className="input-neon"
               required
             />
           </div>
           
-          {/* Amount */}
-          <div>
-            <label className="block text-sm font-medium text-dark-300 mb-2">
+          {/* Amount with Currency Selector */}
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-dark-300 uppercase tracking-wider">
               Amount
             </label>
-            <div className="relative">
-              <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-dark-400" />
+            <div className="flex gap-2">
+              {/* Currency Selector */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowCurrencyDropdown(!showCurrencyDropdown)}
+                  className="h-full px-4 py-3 rounded-xl bg-dark-800 border border-dark-600 hover:border-primary-500 transition-all flex items-center gap-2 text-white font-semibold min-w-[100px]"
+                >
+                  <span className="text-lg">{currentCurrencyData.symbol}</span>
+                  <span className="text-sm text-dark-400">{selectedCurrency}</span>
+                  <ChevronDown className={`w-4 h-4 text-dark-400 transition-transform ${showCurrencyDropdown ? 'rotate-180' : ''}`} />
+                </button>
+                
+                {showCurrencyDropdown && (
+                  <div className="absolute top-full left-0 mt-2 w-48 py-2 bg-dark-800 border border-dark-600 rounded-xl shadow-xl z-50 max-h-60 overflow-y-auto">
+                    {currencies.map((curr) => (
+                      <button
+                        key={curr.code}
+                        type="button"
+                        onClick={() => {
+                          setSelectedCurrency(curr.code);
+                          setShowCurrencyDropdown(false);
+                        }}
+                        className={`w-full flex items-center gap-3 px-4 py-2.5 hover:bg-dark-700 transition-colors ${
+                          selectedCurrency === curr.code ? 'text-primary-400 bg-primary-500/10' : 'text-dark-300'
+                        }`}
+                      >
+                        <span className="w-6 font-semibold">{curr.symbol}</span>
+                        <span>{curr.code}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              
+              {/* Amount Input */}
               <input
                 type="number"
                 value={amount}
@@ -122,21 +163,21 @@ export default function AddExpenseModal({ groupId, onClose }: AddExpenseModalPro
                 placeholder="0.00"
                 step="0.01"
                 min="0"
-                className="input pl-12"
+                className="input-neon flex-1 text-2xl font-bold"
                 required
               />
             </div>
           </div>
           
           {/* Paid By */}
-          <div>
-            <label className="block text-sm font-medium text-dark-300 mb-2">
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-dark-300 uppercase tracking-wider">
               Paid by
             </label>
             <select
               value={paidBy}
               onChange={(e) => setPaidBy(e.target.value)}
-              className="input"
+              className="input-neon"
             >
               {group.members.map((member) => (
                 <option key={member.id} value={member.id}>
@@ -147,8 +188,8 @@ export default function AddExpenseModal({ groupId, onClose }: AddExpenseModalPro
           </div>
           
           {/* Category */}
-          <div>
-            <label className="block text-sm font-medium text-dark-300 mb-2">
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-dark-300 uppercase tracking-wider">
               Category
             </label>
             <div className="grid grid-cols-3 gap-2">
@@ -157,13 +198,13 @@ export default function AddExpenseModal({ groupId, onClose }: AddExpenseModalPro
                   key={cat.value}
                   type="button"
                   onClick={() => setCategory(cat.value)}
-                  className={`p-3 rounded-xl text-center transition-all ${
+                  className={`category-btn p-3 rounded-xl text-center transition-all transform hover:scale-105 ${
                     category === cat.value
-                      ? 'bg-primary-500/20 border-2 border-primary-500'
-                      : 'bg-dark-800 border-2 border-transparent hover:border-dark-600'
+                      ? 'bg-gradient-to-br from-primary-500/30 to-emerald-500/30 border-2 border-primary-500 neon-glow'
+                      : 'bg-dark-800/50 border-2 border-transparent hover:border-dark-600'
                   }`}
                 >
-                  <span className="text-xl block mb-1">{cat.emoji}</span>
+                  <span className="text-2xl block mb-1">{cat.emoji}</span>
                   <span className="text-xs text-dark-300">{cat.label}</span>
                 </button>
               ))}
@@ -171,34 +212,34 @@ export default function AddExpenseModal({ groupId, onClose }: AddExpenseModalPro
           </div>
           
           {/* Date */}
-          <div>
-            <label className="block text-sm font-medium text-dark-300 mb-2">
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-dark-300 uppercase tracking-wider">
               Date
             </label>
             <div className="relative">
-              <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-dark-400" />
+              <Calendar className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-dark-400 pointer-events-none" />
               <input
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="input pl-12"
+                className="input-neon pr-12"
               />
             </div>
           </div>
           
           {/* Split Between */}
-          <div>
-            <label className="block text-sm font-medium text-dark-300 mb-2">
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-dark-300 uppercase tracking-wider">
               Split between
             </label>
             <div className="space-y-2">
               {group.members.map((member) => (
                 <label
                   key={member.id}
-                  className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${
+                  className={`member-card flex items-center gap-3 p-4 rounded-xl cursor-pointer transition-all transform hover:scale-[1.02] ${
                     selectedMembers.includes(member.id)
-                      ? 'bg-primary-500/20 border border-primary-500/50'
-                      : 'bg-dark-800 border border-transparent hover:border-dark-600'
+                      ? 'bg-gradient-to-r from-primary-500/20 to-emerald-500/20 border border-primary-500/50 neon-glow-subtle'
+                      : 'bg-dark-800/50 border border-transparent hover:border-dark-600'
                   }`}
                 >
                   <input
@@ -207,24 +248,24 @@ export default function AddExpenseModal({ groupId, onClose }: AddExpenseModalPro
                     onChange={() => toggleMember(member.id)}
                     className="sr-only"
                   />
-                  <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${
+                  <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${
                     selectedMembers.includes(member.id)
-                      ? 'bg-primary-500 border-primary-500'
+                      ? 'bg-gradient-to-br from-primary-500 to-emerald-500 border-primary-500'
                       : 'border-dark-500'
                   }`}>
                     {selectedMembers.includes(member.id) && (
-                      <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                       </svg>
                     )}
                   </div>
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-emerald-400 flex items-center justify-center text-white font-semibold text-sm">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white font-bold shadow-lg">
                     {member.name.charAt(0)}
                   </div>
-                  <span className="text-white font-medium">{member.name}</span>
+                  <span className="text-white font-semibold flex-1">{member.name}</span>
                   {selectedMembers.includes(member.id) && amount && (
-                    <span className="ml-auto text-dark-400 text-sm">
-                      ${(parseFloat(amount) / selectedMembers.length).toFixed(2)}
+                    <span className="text-primary-400 font-bold text-lg">
+                      {currentCurrencyData.symbol}{(parseFloat(amount) / selectedMembers.length).toFixed(2)}
                     </span>
                   )}
                 </label>
@@ -234,15 +275,15 @@ export default function AddExpenseModal({ groupId, onClose }: AddExpenseModalPro
           
           {/* Actions */}
           <div className="flex gap-3 pt-4">
-            <button type="button" onClick={onClose} className="btn-secondary flex-1">
+            <button type="button" onClick={onClose} className="btn-secondary-3d flex-1">
               Cancel
             </button>
             <button
               type="submit"
               disabled={!description || !amount || selectedMembers.length === 0}
-              className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-primary-3d flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Add Expense
+              <span className="relative z-10">Add Expense</span>
             </button>
           </div>
         </form>
