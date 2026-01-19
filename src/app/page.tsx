@@ -12,6 +12,8 @@ import UpgradeModal from '@/components/UpgradeModal';
 import OnboardingModal from '@/components/OnboardingModal';
 import MobileNav from '@/components/MobileNav';
 import ConfirmDialog from '@/components/ConfirmDialog';
+import SettingsModal from '@/components/SettingsModal';
+import Footer from '@/components/Footer';
 
 export default function Home() {
   const { user, activeGroupId, setActiveGroup, deleteGroup } = useStore();
@@ -22,6 +24,7 @@ export default function Home() {
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
   
   // Handle hydration
@@ -60,6 +63,7 @@ export default function Home() {
         <Sidebar
           onNewGroup={() => setShowNewGroup(true)}
           onUpgrade={() => setShowUpgrade(true)}
+          onSettings={() => setShowSettings(true)}
         />
       </div>
       
@@ -88,6 +92,10 @@ export default function Home() {
                 setShowUpgrade(true);
                 setShowMobileMenu(false);
               }}
+              onSettings={() => {
+                setShowSettings(true);
+                setShowMobileMenu(false);
+              }}
             />
           </div>
         </div>
@@ -95,17 +103,20 @@ export default function Home() {
       
       {/* Main Content */}
       <main className="flex-1 flex flex-col pt-16 md:pt-0">
-        {activeGroupId ? (
-          <GroupView
-            groupId={activeGroupId}
-            onAddExpense={() => setShowAddExpense(true)}
-            onUpgrade={() => setShowUpgrade(true)}
-            onEditGroup={() => setShowEditGroup(true)}
-            onDeleteGroup={() => setShowDeleteGroup(true)}
-          />
-        ) : (
-          <Dashboard onSelectGroup={(id) => setActiveGroup(id)} />
-        )}
+        <div className="flex-1">
+          {activeGroupId ? (
+            <GroupView
+              groupId={activeGroupId}
+              onAddExpense={() => setShowAddExpense(true)}
+              onUpgrade={() => setShowUpgrade(true)}
+              onEditGroup={() => setShowEditGroup(true)}
+              onDeleteGroup={() => setShowDeleteGroup(true)}
+            />
+          ) : (
+            <Dashboard onSelectGroup={(id) => setActiveGroup(id)} />
+          )}
+        </div>
+        <Footer />
       </main>
       
       {/* Modals */}
@@ -143,6 +154,16 @@ export default function Home() {
       
       {showUpgrade && (
         <UpgradeModal onClose={() => setShowUpgrade(false)} />
+      )}
+      
+      {showSettings && (
+        <SettingsModal 
+          onClose={() => setShowSettings(false)}
+          onUpgrade={() => {
+            setShowSettings(false);
+            setShowUpgrade(true);
+          }}
+        />
       )}
     </div>
   );

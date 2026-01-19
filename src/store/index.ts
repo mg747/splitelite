@@ -14,6 +14,9 @@ interface AppState {
   user: User | null;
   setUser: (user: User | null) => void;
   upgradeToPremium: () => void;
+  freezeAccount: () => void;
+  unfreezeAccount: () => void;
+  deleteAccount: () => void;
   
   // Groups
   groups: Group[];
@@ -62,6 +65,19 @@ export const useStore = create<AppState>()(
       upgradeToPremium: () => set((state) => ({
         user: state.user ? { ...state.user, isPremium: true } : null
       })),
+      freezeAccount: () => set((state) => ({
+        user: state.user ? { ...state.user, status: 'frozen' } : null
+      })),
+      unfreezeAccount: () => set((state) => ({
+        user: state.user ? { ...state.user, status: 'active' } : null
+      })),
+      deleteAccount: () => set({
+        user: null,
+        groups: [],
+        expenses: [],
+        settlements: [],
+        activeGroupId: null,
+      }),
       
       // Groups
       groups: [],

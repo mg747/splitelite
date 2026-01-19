@@ -5,6 +5,7 @@ export interface User {
   avatar?: string;
   isPremium: boolean;
   createdAt: Date;
+  status?: 'active' | 'frozen' | 'deleted';
 }
 
 export interface Group {

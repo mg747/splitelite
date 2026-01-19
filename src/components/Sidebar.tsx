@@ -17,9 +17,10 @@ import CurrencySelector from './CurrencySelector';
 interface SidebarProps {
   onNewGroup: () => void;
   onUpgrade: () => void;
+  onSettings: () => void;
 }
 
-export default function Sidebar({ onNewGroup, onUpgrade }: SidebarProps) {
+export default function Sidebar({ onNewGroup, onUpgrade, onSettings }: SidebarProps) {
   const { user, groups, activeGroupId, setActiveGroup } = useStore();
   const { t } = useTranslation();
   
@@ -161,7 +162,10 @@ export default function Sidebar({ onNewGroup, onUpgrade }: SidebarProps) {
 
       {/* Settings */}
       <div className="p-4 border-t border-dark-700">
-        <button className="w-full flex items-center gap-3 px-4 py-2 rounded-xl text-dark-400 hover:bg-dark-800 hover:text-white transition-all">
+        <button 
+          onClick={onSettings}
+          className="w-full flex items-center gap-3 px-4 py-2 rounded-xl text-dark-400 hover:bg-dark-800 hover:text-white transition-all"
+        >
           <Settings className="w-5 h-5" />
           <span className="font-medium">{t('settings.title')}</span>
         </button>
