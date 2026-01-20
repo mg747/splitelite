@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0e17;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a1f2e;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="iconGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22c55e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#10b981;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGrad)"/>
+  
+  <!-- Decorative circles -->
+  <circle cx="100" cy="100" r="200" fill="#22c55e" opacity="0.05"/>
+  <circle cx="1100" cy="530" r="250" fill="#22c55e" opacity="0.05"/>
+  
+  <!-- Icon -->
+  <g transform="translate(150, 165)">
+    <circle cx="150" cy="100" r="60" fill="url(#iconGrad)"/>
+    <circle cx="100" cy="200" r="45" fill="url(#iconGrad)" opacity="0.8"/>
+    <circle cx="200" cy="200" r="45" fill="url(#iconGrad)" opacity="0.8"/>
+    <path d="M150 100 L100 200 M150 100 L200 200 M100 200 L200 200" stroke="url(#iconGrad)" stroke-width="6" fill="none"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="500" y="280" fill="white" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="bold">SplitElite</text>
+  <text x="500" y="360" fill="#9ca3af" font-family="system-ui, -apple-system, sans-serif" font-size="32">Smart Expense Splitting</text>
+  
+  <!-- Features -->
+  <text x="500" y="450" fill="#22c55e" font-family="system-ui, -apple-system, sans-serif" font-size="24">✓ Track Expenses</text>
+  <text x="720" y="450" fill="#22c55e" font-family="system-ui, -apple-system, sans-serif" font-size="24">✓ Split Bills</text>
+  <text x="900" y="450" fill="#22c55e" font-family="system-ui, -apple-system, sans-serif" font-size="24">✓ Settle Up</text>
+  
+  <!-- URL -->
+  <text x="500" y="550" fill="#6b7280" font-family="system-ui, -apple-system, sans-serif" font-size="20">splitelite.com</text>
+</svg>

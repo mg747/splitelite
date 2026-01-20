@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import TranslationProvider from '@/components/TranslationProvider'
+import { AuthProvider } from '@/contexts/AuthContext'
+import { DataProvider } from '@/contexts/DataContext'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://splitelite.com'),
@@ -28,7 +30,7 @@ export const metadata: Metadata = {
     description: 'The premium way to split expenses with friends and groups',
     images: [
       {
-        url: '/og-image.png',
+        url: '/og-image.svg',
         width: 1200,
         height: 630,
         alt: 'SplitElite - Smart Expense Splitting',
@@ -39,18 +41,17 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'SplitElite - Smart Expense Splitting',
     description: 'The premium way to split expenses with friends and groups',
-    images: ['/og-image.png'],
+    images: ['/og-image.svg'],
   },
   icons: {
     icon: [
-      { url: '/icons/icon-32x32.png', sizes: '32x32', type: 'image/png' },
-      { url: '/icons/icon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
     ],
     apple: [
-      { url: '/icons/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+      { url: '/icons/icon.svg', type: 'image/svg+xml' },
     ],
     other: [
-      { rel: 'mask-icon', url: '/icons/safari-pinned-tab.svg', color: '#22c55e' },
+      { rel: 'mask-icon', url: '/icons/icon.svg', color: '#22c55e' },
     ],
   },
 }
@@ -96,9 +97,13 @@ export default function RootLayout({
         <link rel="apple-touch-startup-image" href="/splash/apple-splash-1242-2208.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)" />
       </head>
       <body className="min-h-screen bg-dark-950">
-        <TranslationProvider>
-          {children}
-        </TranslationProvider>
+        <AuthProvider>
+          <DataProvider>
+            <TranslationProvider>
+              {children}
+            </TranslationProvider>
+          </DataProvider>
+        </AuthProvider>
       </body>
     </html>
   )
