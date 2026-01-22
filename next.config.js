@@ -6,7 +6,12 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['www.intelligenceforall.ai'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'www.intelligenceforall.ai',
+      },
+    ],
   },
   async headers() {
     return [
