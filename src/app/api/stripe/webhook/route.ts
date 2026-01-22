@@ -1,11 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { createClient } from '@supabase/supabase-js';
 
 const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2025-12-15.clover' })
   : null;
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+// Create Supabase admin client for webhook updates
+const supabase = process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY
+  ? createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
+    )
+  : null;
+
+async function updateUserSubscription(userId: string, data: {
+  is_premium?: boolean;
+  stripe_customer_id?: string;
+  subscription_status?: string;
+  subscription_end_date?: Date | null;
+}) {
+  if (!supabase) {
+    console.log('Supabase not configured, skipping database update');
+    return;
+  }
+  
+  const { error } = await supabase
+    .from('profiles')
+    .update(data)
+    .eq('id', userId);
+    
+  if (error) {
+    console.error('Failed to update user subscription:', error);
+  }
+}
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
@@ -37,12 +67,11 @@ export async function POST(request: NextRequest) {
         const userId = session.client_reference_id || session.metadata?.userId;
         
         if (userId) {
-          // Update user to premium in database
-          // await updateUserSubscription(userId, {
-          //   isPremium: true,
-          //   stripeCustomerId: session.customer,
-          //   subscriptionStatus: 'active',
-          // });
+          await updateUserSubscription(userId, {
+            is_premium: true,
+            stripe_customer_id: session.customer as string,
+            subscription_status: 'active',
+          });
           console.log(`User ${userId} upgraded to premium`);
         }
         break;
@@ -54,11 +83,11 @@ export async function POST(request: NextRequest) {
         
         if (userId) {
           const status = subscription.status;
-          // await updateUserSubscription(userId, {
-          //   subscriptionStatus: status,
-          //   isPremium: status === 'active',
-          //   subscriptionEndDate: new Date(subscription.current_period_end * 1000),
-          // });
+          await updateUserSubscription(userId, {
+            subscription_status: status,
+            is_premium: status === 'active',
+            subscription_end_date: new Date(subscription.current_period_end * 1000),
+          });
           console.log(`User ${userId} subscription updated: ${status}`);
         }
         break;
@@ -69,10 +98,10 @@ export async function POST(request: NextRequest) {
         const userId = subscription.metadata?.userId;
         
         if (userId) {
-          // await updateUserSubscription(userId, {
-          //   isPremium: false,
-          //   subscriptionStatus: 'cancelled',
-          // });
+          await updateUserSubscription(userId, {
+            is_premium: false,
+            subscription_status: 'cancelled',
+          });
           console.log(`User ${userId} subscription cancelled`);
         }
         break;
